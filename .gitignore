@@ -1,0 +1,3 @@
+*.json
+/src/**/.terraform.lock.hcl
+/src/**/.terraform/
