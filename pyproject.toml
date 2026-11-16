@@ -11,3 +11,9 @@ dependencies = [
     "google-cloud-storage>=3.15.0",
     "pip>=26.2.1",
 ]
+
+[tool.uv.workspace]
+members = [
+    "src/week_5/grcp/grpc-scalffold",
+    "src/week_5/rabbitmq",
+]

@@ -17,24 +17,517 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Success'
-  
+
+  /courses:
+    get:
+      summary: Get all courses
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Courses'
+        default:
+          description: Failed to fetch course
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Create a course
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - description
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                tags:
+                  type: array
+                  items:
+                    type: string
+                professor_id:
+                  type: integer
+                  nullable: true
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Failed to create course
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /courses/{course_id}:
+    get:
+      summary: Get a course by ID
+      parameters:
+        - in: path
+          name: course_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+        '404':
+          description: Course not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Failed to fetch course
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Update a course
+      parameters:
+        - in: path
+          name: course_id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                tags:
+                  type: array
+                  items:
+                    type: string
+                professor_id:
+                  type: integer
+                  nullable: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+        '404':
+          description: Course not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Professor not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Failed to update course
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Delete a course
+      parameters:
+        - in: path
+          name: course_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Course deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+        '404':
+          description: Course not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Failed to delete course
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /professors:
+    get:
+      summary: Get all professors
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Professors'
+        default:
+          description: Failed to fetch professor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Create a professor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+      responses:
+        '201':
+          description: Professor created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Professor'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Failed to create professor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /professors/{professor_id}:
+    get:
+      summary: Get a professor by ID
+      parameters:
+        - in: path
+          name: professor_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Professor'
+        '404':
+          description: Professor not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Failed to fetch professor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Update a professor
+      parameters:
+        - in: path
+          name: professor_id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Professor'
+        '400':
+          description: Invalid email or duplicate email
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Professor not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Failed to update professor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Delete a professor
+      parameters:
+        - in: path
+          name: professor_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Professor deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+        '400':
+          description: Cannot delete professor with assigned courses
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Professor not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Failed to delete professor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /professors/{professor_id}/courses:
+    get:
+      summary: Get courses for a professor
+      parameters:
+        - in: path
+          name: professor_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Courses'
+        '404':
+          description: Professor not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Failed to fetch professor courses
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /professors/{professor_id}/courses/{course_id}:
+    put:
+      summary: Assign a course to a professor
+      parameters:
+        - in: path
+          name: professor_id
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: course_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Course assigned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Professor'
+        '404':
+          description: Professor or course not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Failed to assign course to professor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Unassign a course from a professor
+      parameters:
+        - in: path
+          name: professor_id
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: course_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Course unassigned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Professor'
+        '400':
+          description: Course is not assigned to this professor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Professor or course not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Failed to unassign course from professor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
 components:
   schemas:
     Course:
       description: course schema
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+        description:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        professor_id:
+          type: integer
+          nullable: true
+        createdAt:
+          type: string
+          readOnly: true
+          format: date-time
+        updatedAt:
+          type: string
+          readOnly: true
+          format: date-time
+      required:
+        - name
+
     Courses:
       description: list of courses
+      type: array
+      items:
+        $ref: '#/components/schemas/Course'
+
     Professor:
       description: professor schema
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        createdAt:
+          type: string
+          readOnly: true
+          format: date-time
+        updatedAt:
+          type: string
+          readOnly: true
+          format: date-time
+        courses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Course'
+          readOnly: true
+      required:
+        - name
+        - email
+
     Professors:
       description: list of professors
+      type: array
+      items:
+        $ref: '#/components/schemas/Professor'
+
     Success:
       description: success schema
+      type: object
+      properties:
+        message:
+          type: string
+
     Error:
       description: error schema
-          
-          
-          
-          
-          
-          
+      type: object
+      properties:
+        error:
+          type: string
+

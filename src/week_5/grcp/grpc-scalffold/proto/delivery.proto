@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+// Request for scheduling a delivery
+message DeliveryRequest {
+  string orderID = 1;
+  float distance = 2;
+}
+
+// Response from DeliveryService
+message DeliveryResponse {
+  enum Status {
+    ACCEPTED = 0;
+    REJECTED = 1;
+  }
+  Status status = 2;
+  string trackingCode = 3;
+  string message = 4;
+  string server_port = 5;
+}
+
+// DeliveryService definition
+service DeliveryService {
+  rpc ScheduleDelivery (DeliveryRequest) returns (DeliveryResponse);
+}
