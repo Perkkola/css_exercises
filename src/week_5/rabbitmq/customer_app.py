@@ -30,7 +30,7 @@ class CustomerEventConsumer:
         self.channel.exchange_declare(
             exchange=self.customer_events_exchange, exchange_type="topic"
         )
-        # Temporary, exclusive queue that only receives this customer's events
+        
         result = self.channel.queue_declare(queue="", exclusive=True)
         self.temporary_queue_name = result.method.queue
         self.channel.queue_bind(

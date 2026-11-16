@@ -39,23 +39,21 @@ class TicketWorker:
         )
         self.channel = self.connection.channel()
 
-        # Dead letter exchange + queue for nacked (invalid) ticket events
         self.channel.exchange_declare(
             exchange=self.dead_letter_exchange, exchange_type="direct"
         )
         self.channel.queue_declare(queue=self.dead_letter_queue)
+        
         self.channel.queue_bind(
             queue=self.dead_letter_queue,
             exchange=self.dead_letter_exchange,
             routing_key=self.dead_letter_routing_key,
         )
 
-        # Consistent hash exchange for ticket events (routing key = customer_id)
         self.channel.exchange_declare(
             exchange=self.ticket_event_exchange, exchange_type="x-consistent-hash"
         )
 
-        # Per-worker queue; rejected messages are dead-lettered
         self.queue_name = "{}_{}".format(self.queue_name, self.worker_id)
         self.channel.queue_declare(
             queue=self.queue_name,
@@ -64,7 +62,6 @@ class TicketWorker:
                 "x-dead-letter-routing-key": self.dead_letter_routing_key,
             },
         )
-        # For a consistent hash exchange the binding key is the weight of the queue
         self.channel.queue_bind(
             queue=self.queue_name,
             exchange=self.ticket_event_exchange,
@@ -80,7 +77,6 @@ class TicketWorker:
     def handle_ticket_event(self, ch, method, properties, body):
         # To implement - This is the callback that is passed to "on_message_callback" when a message is received
         xprint("TicketWorker {}: handle_event() called".format(self.worker_id))
-        # Handle the application logic and the publishing of events here
         ticket_event = TicketEvent(**json.loads(body))
         self.ticket_events.append(ticket_event)
 

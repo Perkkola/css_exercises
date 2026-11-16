@@ -21,8 +21,6 @@ class TicketEventProducer:
             pika.ConnectionParameters(host="localhost")
         )
         self.channel = self.connection.channel()
-        # Consistent hash exchange: messages with the same routing key (customer_id)
-        # always end up in the same bound queue, i.e. at the same worker.
         self.channel.exchange_declare(
             exchange=self.exchange, exchange_type="x-consistent-hash"
         )
