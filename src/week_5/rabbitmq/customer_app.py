@@ -23,14 +23,36 @@ class CustomerEventConsumer:
     def initialize_rabbitmq(self):
         # To implement - Initialize the RabbitMq connection, channel, exchange and queue here
         xprint("CustomerEventConsumer {}: initialize_rabbitmq() called".format(self.customer_id))
+        self.connection = pika.BlockingConnection(
+            pika.ConnectionParameters(host="localhost")
+        )
+        self.channel = self.connection.channel()
+        self.channel.exchange_declare(
+            exchange=self.customer_events_exchange, exchange_type="topic"
+        )
+        # Temporary, exclusive queue that only receives this customer's events
+        result = self.channel.queue_declare(queue="", exclusive=True)
+        self.temporary_queue_name = result.method.queue
+        self.channel.queue_bind(
+            queue=self.temporary_queue_name,
+            exchange=self.customer_events_exchange,
+            routing_key=self.customer_id,
+        )
 
     def handle_event(self, ch, method, properties, body):
         # To implement - This is the callback that is passed to "on_message_callback" when a message is received
         xprint("CustomerEventConsumer {}: handle_event() called".format(self.customer_id))
+        customer_event = CustomerEvent(**json.loads(body))
+        self.customer_events.append(customer_event)
+        ch.basic_ack(delivery_tag=method.delivery_tag)
 
     def start_consuming(self):
         # To implement - Start consuming from Rabbit
         xprint("CustomerEventConsumer {}: start_consuming() called".format(self.customer_id))
+        self.channel.basic_consume(
+            queue=self.temporary_queue_name, on_message_callback=self.handle_event
+        )
+        self.channel.start_consuming()
 
     def close(self):
         # Do not edit this method

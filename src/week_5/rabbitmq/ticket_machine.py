@@ -17,6 +17,15 @@ class TicketEventProducer:
     def initialize_rabbitmq(self):
         # To implement - Initialize the RabbitMq connection, channel, exchange and queue here
         xprint("TicketEventProducer initialize_rabbitmq() called")
+        self.connection = pika.BlockingConnection(
+            pika.ConnectionParameters(host="localhost")
+        )
+        self.channel = self.connection.channel()
+        # Consistent hash exchange: messages with the same routing key (customer_id)
+        # always end up in the same bound queue, i.e. at the same worker.
+        self.channel.exchange_declare(
+            exchange=self.exchange, exchange_type="x-consistent-hash"
+        )
 
     def publish_ticket_event(self, ticket_event):
         xprint(
@@ -24,6 +33,11 @@ class TicketEventProducer:
         )
         # To implement - publish a message to the Rabbitmq here
         # Use json.dumps(vars(ticket_event)) to convert the shopping_event object to JSON
+        self.channel.basic_publish(
+            exchange=self.exchange,
+            routing_key=ticket_event.customer_id,
+            body=json.dumps(vars(ticket_event)),
+        )
 
     def close(self):
         # Do not edit this method
